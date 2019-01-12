@@ -1,0 +1,59 @@
+# Maintainer: DiodeRed
+
+basename=nextpnr-ice40
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=0.0
+pkgver=0.0.1819.c1d15c7
+pkgrel=1
+pkgdesc="nextpnr portable FPGA place and route tool"
+arch=('any')
+url="https://github.com/YosysHQ/nextpnr"
+license=('ISC')
+provides=("${MINGW_PACKAGE_PREFIX}-nextpnr-ice40")
+conflicts=("${MINGW_PACKAGE_PREFIX}-nextpnr-ice40")
+depends=("${MINGW_PACKAGE_PREFIX}-python3"
+         "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+		 "${MINGW_PACKAGE_PREFIX}-icestorm"
+		 "${MINGW_PACKAGE_PREFIX}-qt5")
+makedepends=("git"
+             "gawk"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-make"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+			 "${MINGW_PACKAGE_PREFIX}-boost"
+			 "${MINGW_PACKAGE_PREFIX}-cmake"
+             )
+source=('git+https://github.com/YosysHQ/nextpnr#branch=master')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/nextpnr"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+
+build() {
+  cd "${srcdir}/nextpnr"
+  
+  rm -rf build
+  mkdir -p build
+  cd build
+  
+  MSYS2_ARG_CONV_EXCL=- cmake \
+    -G "MSYS Makefiles" \
+    -DARCH=ice40 \
+	-DICEBOX_ROOT=${MINGW_PREFIX}/share/icebox \
+	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	-DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    ..
+  
+  make
+}
+
+package() {
+  cd "${srcdir}/nextpnr/build"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  make -j1 DESTDIR=${pkgdir} install
+}

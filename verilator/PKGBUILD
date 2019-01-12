@@ -1,0 +1,59 @@
+# Maintainer: DiodeRed
+
+basename=verilator
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=0.0
+pkgver=0.0.2566.62a7d713
+pkgrel=1
+pkgdesc="The fastest free Verilog HDL simulator"
+arch=('any')
+url="https://www.veripool.org/wiki/verilator"
+license=('LGPL')
+provides=("${MINGW_PACKAGE_PREFIX}-verilator")
+conflicts=("${MINGW_PACKAGE_PREFIX}-verilator")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
+makedepends=("git"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-make"
+			 "autoconf"
+			 "flex"
+			 "bison"
+             )
+source=("$basename"::"git+http://git.veripool.org/git/$basename#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${basename}"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "${srcdir}"
+  
+  [[ -d "build-${MINGW_CHOST}" ]] && rm -rf "build-${MINGW_CHOST}"
+  cd "${basename}"
+  git checkout-index -a -f --prefix="${srcdir}/build-${MINGW_CHOST}/"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  cp /usr/include/FlexLexer.h src/
+
+  export MSYS2_ARG_CONV_EXCL="-DDEFENV"
+  
+  unset VERILATOR_ROOT
+  autoconf
+  
+  ./configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST}
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  make -j1 DESTDIR=${pkgdir} install
+}

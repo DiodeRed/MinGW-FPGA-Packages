@@ -1,0 +1,12 @@
+diff --git a/tests/unit/Makefile b/tests/unit/Makefile
+index 9f1e5c99..ce3a6cfb 100644
+--- a/tests/unit/Makefile
++++ b/tests/unit/Makefile
+@@ -1,6 +1,6 @@
+ GTESTFLAG := -lgtest -lgtest_main
+ RPATH := -Wl,-rpath
+-EXTRAFLAGS := -lyosys -pthreads
++EXTRAFLAGS := -lyosys -mthreads
+ 
+ OBJTEST := objtest
+ BINTEST := bintest

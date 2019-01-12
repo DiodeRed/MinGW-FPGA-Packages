@@ -1,0 +1,84 @@
+diff --git a/Makefile b/Makefile
+index 4b39e9c8..47bf1f10 100644
+--- a/Makefile
++++ b/Makefile
+@@ -46,6 +46,7 @@ LIBDIR := $(PREFIX)/lib
+ DATDIR := $(PREFIX)/share/yosys
+ 
+ EXE =
++DLL = .so
+ OBJS =
+ GENFILES =
+ EXTRA_OBJS =
+@@ -228,6 +229,7 @@ LDLIBS := $(filter-out -lrt,$(LDLIBS))
+ ABCMKARGS += ARCHFLAGS="-DWIN32_NO_DLL -DHAVE_STRUCT_TIMESPEC -fpermissive -w"
+ ABCMKARGS += LIBS="lib/x86/pthreadVC2.lib -s" ABC_USE_NO_READLINE=1 CC="/usr/local/src/mxe/usr/bin/i686-w64-mingw32.static-gcc"
+ EXE = .exe
++DLL = .dll
+ 
+ else ifeq ($(CONFIG),msys2)
+ CXX = i686-w64-mingw32-g++
+@@ -239,6 +241,7 @@ LDLIBS := $(filter-out -lrt,$(LDLIBS))
+ ABCMKARGS += ARCHFLAGS="-DABC_USE_STDINT_H -DWIN32_NO_DLL -DHAVE_STRUCT_TIMESPEC -fpermissive -w"
+ ABCMKARGS += LIBS="-lpthread -s" ABC_USE_NO_READLINE=0 CC="i686-w64-mingw32-gcc" CXX="$(CXX)"
+ EXE = .exe
++DLL = .dll
+ 
+ else ifeq ($(CONFIG),msys2-64)
+ CXX = x86_64-w64-mingw32-g++
+@@ -250,13 +253,14 @@ LDLIBS := $(filter-out -lrt,$(LDLIBS))
+ ABCMKARGS += ARCHFLAGS="-DABC_USE_STDINT_H -DWIN32_NO_DLL -DHAVE_STRUCT_TIMESPEC -fpermissive -w"
+ ABCMKARGS += LIBS="-lpthread -s" ABC_USE_NO_READLINE=0 CC="x86_64-w64-mingw32-gcc" CXX="$(CXX)"
+ EXE = .exe
++DLL = .dll
+ 
+ else ifneq ($(CONFIG),none)
+ $(error Invalid CONFIG setting '$(CONFIG)'. Valid values: clang, gcc, gcc-4.8, emcc, mxe, msys2, msys2-64)
+ endif
+ 
+ ifeq ($(ENABLE_LIBYOSYS),1)
+-TARGETS += libyosys.so
++TARGETS += libyosys$(DLL)
+ endif
+ 
+ ifeq ($(ENABLE_READLINE),1)
+@@ -497,8 +501,8 @@ endif
+ yosys$(EXE): $(OBJS)
+ 	$(P) $(LD) -o yosys$(EXE) $(LDFLAGS) $(OBJS) $(LDLIBS)
+ 
+-libyosys.so: $(filter-out kernel/driver.o,$(OBJS))
+-	$(P) $(LD) -o libyosys.so -shared -Wl,-soname,libyosys.so $(LDFLAGS) $^ $(LDLIBS)
++libyosys$(DLL): $(filter-out kernel/driver.o,$(OBJS))
++	$(P) $(LD) -o libyosys$(DLL) -shared -Wl,-soname,libyosys$(DLL) $(LDFLAGS) $^ $(LDLIBS)
+ 
+ %.o: %.cc
+ 	$(Q) mkdir -p $(dir $@)
+@@ -605,7 +609,7 @@ ystests: $(TARGETS) $(EXTRA_TARGETS)
+ 	@echo ""
+ 
+ # Unit test
+-unit-test: libyosys.so
++unit-test: libyosys$(DLL)
+ 	@$(MAKE) -C $(UNITESTPATH) CXX="$(CXX)" CPPFLAGS="$(CPPFLAGS)" \
+ 		CXXFLAGS="$(CXXFLAGS)" LDLIBS="$(LDLIBS)" ROOTPATH="$(CURDIR)"
+ 
+@@ -627,8 +631,8 @@ endif
+ 	$(INSTALL_SUDO) mkdir -p $(DESTDIR)$(DATDIR)
+ 	$(INSTALL_SUDO) cp -r share/. $(DESTDIR)$(DATDIR)/.
+ ifeq ($(ENABLE_LIBYOSYS),1)
+-	$(INSTALL_SUDO) cp libyosys.so $(DESTDIR)$(LIBDIR)
+-	$(INSTALL_SUDO) $(STRIP) -S $(DESTDIR)$(LIBDIR)/libyosys.so
++	$(INSTALL_SUDO) cp libyosys$(DLL) $(DESTDIR)$(LIBDIR)
++	$(INSTALL_SUDO) $(STRIP) -S $(DESTDIR)$(LIBDIR)/libyosys$(DLL)
+ 	$(INSTALL_SUDO) ldconfig
+ endif
+ 
+@@ -636,7 +640,7 @@ uninstall:
+ 	$(INSTALL_SUDO) rm -vf $(addprefix $(DESTDIR)$(BINDIR)/,$(notdir $(TARGETS)))
+ 	$(INSTALL_SUDO) rm -rvf $(DESTDIR)$(DATDIR)
+ ifeq ($(ENABLE_LIBYOSYS),1)
+-	$(INSTALL_SUDO) rm -vf $(DESTDIR)$(LIBDIR)/libyosys.so
++	$(INSTALL_SUDO) rm -vf $(DESTDIR)$(LIBDIR)/libyosys$(DLL)
+ endif
+ 
+ update-manual: $(TARGETS) $(EXTRA_TARGETS)

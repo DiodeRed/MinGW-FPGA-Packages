@@ -1,0 +1,54 @@
+# Maintainer: DiodeRed
+
+basename=iverilog
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=10.2
+pkgver=10.2.8371.7cd078e7
+pkgrel=1
+pkgdesc="Icarus Verilog"
+arch=('any')
+url="http://iverilog.icarus.com"
+license=('GPL')
+provides=("${MINGW_PACKAGE_PREFIX}-iverilog")
+conflicts=("${MINGW_PACKAGE_PREFIX}-iverilog")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-readline")
+makedepends=("git"
+             "bison"
+             "flex"
+             "autoconf"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-make"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-termcap"
+             "${MINGW_PACKAGE_PREFIX}-gperf"
+             )
+source=("$basename"::"git+https://github.com/steveicarus/$basename#branch=master"
+        '0001-vpi-modules-mingw-fix.patch')
+sha256sums=('SKIP'
+            '0663932243803f5832af57645536227fd1cc0a3b6f97bb7a6a578a0f617654ef')
+
+pkgver() {
+  cd "${srcdir}/${basename}"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "${srcdir}/${basename}"
+  
+  git apply ${srcdir}/0001-vpi-modules-mingw-fix.patch
+  
+  sh autoconf.sh
+  ./configure --prefix=${MINGW_PREFIX}
+  
+  make clean
+  make -j1
+}
+
+package() {
+  cd "${srcdir}/${basename}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  make -j1 DESTDIR=${pkgdir} install
+}

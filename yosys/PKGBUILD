@@ -1,0 +1,73 @@
+# Maintainer: DiodeRed
+
+basename=yosys
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=0.8
+pkgver=0.8.4299.2a2e0a47
+pkgrel=1
+pkgdesc="Yosys Open SYnthesis Suite"
+arch=('any')
+url="http://www.clifford.at/yosys/"
+license=('ISC')
+provides=("${MINGW_PACKAGE_PREFIX}-yosys")
+conflicts=("${MINGW_PACKAGE_PREFIX}-yosys")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-readline"
+		 "${MINGW_PACKAGE_PREFIX}-libffi"
+		 "${MINGW_PACKAGE_PREFIX}-tcl")
+makedepends=("git"
+             "bison"
+             "flex"
+             "${MINGW_PACKAGE_PREFIX}-python3"
+             "${MINGW_PACKAGE_PREFIX}-tcl"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-make"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-dlfcn"
+			 # If tests are uncommented
+             # "${MINGW_PACKAGE_PREFIX}-gtest"
+             # "${MINGW_PACKAGE_PREFIX}-iverilog"
+             )
+source=("$basename"::"git+https://github.com/YosysHQ/$basename#branch=master"
+        '0001-unit-test-mthreads.patch'
+        '0002-libyosys-dll-extension.patch')
+sha256sums=('SKIP'
+            '1248f07f6bdd9f14f191a5e7bdc1ed4cb7f7d65d0cffdaaf77816d4e2d74509b'
+            '27d64649701b82456b415f04ed9b48465f7bc78c340c0f7d7e09735556698312')
+
+pkgver() {
+  cd "${srcdir}/${basename}"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "${srcdir}/${basename}"
+  
+  git apply ${srcdir}/0001-unit-test-mthreads.patch
+  git apply ${srcdir}/0002-libyosys-dll-extension.patch
+  
+  if [ "${MINGW_PACKAGE_PREFIX}" = "mingw-w64-x86_64" ]; then
+    make -j1 config-msys2-64
+  else
+    make -j1 config-msys2
+  fi
+  
+  make clean
+  make
+}
+
+check() {
+  cd "${srcdir}/${basename}"
+  
+  # Some of the tests are slow...
+  # make -j1 unit-test
+  # make -j1 test
+}
+
+package() {
+  cd "${srcdir}/${basename}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  make -j1 DESTDIR=${pkgdir} PREFIX=${MINGW_PREFIX} install
+}

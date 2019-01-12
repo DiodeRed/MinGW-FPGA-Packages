@@ -1,0 +1,43 @@
+# Maintainer: DiodeRed
+
+basename=icestorm
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=0.0
+pkgver=0.0.672.c0cbae8
+pkgrel=1
+pkgdesc="Project IceStorm - Lattice iCE40 FPGAs Bitstream Documentaion (Reverse Engineered)"
+arch=('any')
+url="http://www.clifford.at/icestorm/"
+license=('ISC')
+provides=("${MINGW_PACKAGE_PREFIX}-icestorm")
+conflicts=("${MINGW_PACKAGE_PREFIX}-icestorm")
+depends=("${MINGW_PACKAGE_PREFIX}-python3"
+         "${MINGW_PACKAGE_PREFIX}-libftdi"
+         "${MINGW_PACKAGE_PREFIX}-gcc-libs")
+makedepends=("git"
+             "gawk"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-make"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             )
+source=("$basename"::"git+https://github.com/cliffordwolf/$basename#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${basename}"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "${srcdir}/${basename}"
+  make clean
+  make
+}
+
+package() {
+  cd "${srcdir}/${basename}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  make -j1 DESTDIR=${pkgdir} PREFIX=${MINGW_PREFIX} install
+}
