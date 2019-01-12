@@ -1,0 +1,35 @@
+# Maintainer: DiodeRed
+
+basename=nmigen
+_realname=${basename}-git
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+_ver_base=0.0
+pkgver=0.0.250.307de72
+pkgrel=1
+pkgdesc="A refreshed Python toolbox for building complex digital hardware"
+arch=('any')
+url="https://m-labs.hk/nmigen"
+license=('BSD')
+provides=("${MINGW_PACKAGE_PREFIX}-nmigen")
+conflicts=("${MINGW_PACKAGE_PREFIX}-nmigen")
+depends=(
+	"${MINGW_PACKAGE_PREFIX}-python3"
+	"${MINGW_PACKAGE_PREFIX}-python3-bitarray"
+	"${MINGW_PACKAGE_PREFIX}-python3-pyvcd"
+	)
+makedepends=("git")
+source=("$basename"::"git+https://github.com/m-labs/$basename#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/${basename}"
+  printf "%s.%s.%s" "$_ver_base" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+  cd "${srcdir}/${basename}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+}

@@ -17,3 +17,4 @@ migen/migen/
 nextpnr-ice40/nextpnr/
 verilator/verilator/
 yosys/yosys/
+nmigen/nmigen/

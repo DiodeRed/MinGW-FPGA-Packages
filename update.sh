@@ -19,3 +19,7 @@ updatePkg yosys
 updatePkg migen
 
 updatePkg verilator
+
+updatePkg python3-bitarray
+updatePkg python3-pyvcd
+updatePkg nmigen

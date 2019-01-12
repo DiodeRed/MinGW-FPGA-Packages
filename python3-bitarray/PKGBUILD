@@ -1,0 +1,23 @@
+# Maintainer: DiodeRed
+
+basename=python3-bitarray
+pkgbase=mingw-w64-${basename}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${basename}")
+pkgver=0.8.3
+pkgrel=1
+pkgdesc="Efficient arrays of booleans for Python"
+arch=('any')
+url="https://github.com/ilanschnell/bitarray"
+license=('PSF')
+depends=(
+	"${MINGW_PACKAGE_PREFIX}-python3"
+	)
+source=(https://files.pythonhosted.org/packages/source/b/bitarray/bitarray-$pkgver.tar.gz)
+sha256sums=('050cd30b810ddb3aa941e7ddfbe0d8065e793012d0a88cb5739ec23624b9895e')
+
+package() {
+  cd "${srcdir}/bitarray-${pkgver}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+}

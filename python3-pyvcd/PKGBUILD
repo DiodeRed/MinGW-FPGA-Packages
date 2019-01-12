@@ -1,0 +1,25 @@
+# Maintainer: DiodeRed
+
+basename=python3-pyvcd
+pkgbase=mingw-w64-${basename}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${basename}")
+pkgver=0.1.4
+pkgrel=1
+pkgdesc="The PyVCD package writes Value Change Dump (VCD) files as specified in IEEE 1364-2005."
+arch=('any')
+url="https://github.com/SanDisk-Open-Source/pyvcd"
+license=('MIT')
+depends=(
+	"${MINGW_PACKAGE_PREFIX}-python3"
+	"${MINGW_PACKAGE_PREFIX}-python3-six"
+	)
+makedepends=("${MINGW_PACKAGE_PREFIX}-python3-setuptools-scm")
+source=(https://files.pythonhosted.org/packages/source/p/pyvcd/pyvcd-$pkgver.tar.gz)
+sha256sums=('bdcb848b79cea2196ebf317178eff2c9c7d6354b85f9eb4991e9175f98e26937')
+
+package() {
+  cd "${srcdir}/pyvcd-${pkgver}"
+  rm -rf ${pkgdir}${MINGW_PREFIX}
+  MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
+}
