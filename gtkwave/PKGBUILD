@@ -44,11 +44,14 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${basename}"
+  svn revert -R .
+  svn cleanup . --remove-unversioned
   svn patch ${srcdir}/0001-yyleng-type-fix.patch
   cd "${srcdir}/${basename}/gtkwave3-gtk3"
   ./autogen.sh
   cd "${srcdir}"
 
+  rm -rf "build-${MINGW_CHOST}"
   mkdir -p "build-${MINGW_CHOST}"
   cd "build-${MINGW_CHOST}"
 
