@@ -18,7 +18,7 @@ license=('GPL')
 
 provides=("${MINGW_PACKAGE_PREFIX}-gtkwave")
 conflicts=("${MINGW_PACKAGE_PREFIX}-gtkwave")
-depends=("${MINGW_PACKAGE_PREFIX}-gtk3" 
+depends=("${MINGW_PACKAGE_PREFIX}-gtk2" 
          "${MINGW_PACKAGE_PREFIX}-tk"
          "${MINGW_PACKAGE_PREFIX}-tklib"
          "${MINGW_PACKAGE_PREFIX}-tcl"
@@ -53,7 +53,6 @@ build() {
   cd "build-${MINGW_CHOST}"
 
   ../${basename}/gtkwave3-gtk3/configure \
-    --enable-gtk3 \
 	--with-tcl=${MINGW_PREFIX}/lib/tclConfig.sh \
 	--with-tk=${MINGW_PREFIX}/lib/tkConfig.sh \
     --host=${MINGW_CHOST} \
