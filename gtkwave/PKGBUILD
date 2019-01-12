@@ -1,0 +1,69 @@
+# Maintainer: DiodeRed
+# (This is based on mingw's gtkwave package and AUR's gtkwave-svn package)
+# Contributor: Ricky Wu <rickleaf.wu@hotmail.com>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Jared Casper <jaredcasper@gmail.com>
+
+basename=gtkwave
+_realname=${basename}-svn
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=1503
+pkgrel=1
+pkgdesc='GTKWave is a fully featured GTK+ based wave viewer which reads LXT, LXT2, VZT, FST, and GHW files as well as standard Verilog VCD/EVCD files'
+arch=('any')
+url='https://gtkwave.sourceforge.io/'
+license=('GPL')
+
+provides=("${MINGW_PACKAGE_PREFIX}-gtkwave")
+conflicts=("${MINGW_PACKAGE_PREFIX}-gtkwave")
+depends=("${MINGW_PACKAGE_PREFIX}-gtk3" 
+         "${MINGW_PACKAGE_PREFIX}-tk"
+         "${MINGW_PACKAGE_PREFIX}-tklib"
+         "${MINGW_PACKAGE_PREFIX}-tcl"
+         "${MINGW_PACKAGE_PREFIX}-tcllib"
+		 "${MINGW_PACKAGE_PREFIX}-xz")
+
+makedepends=('svn'
+             'perlxml'
+             'intltool'
+             "${MINGW_PACKAGE_PREFIX}-gcc")
+
+install=gtkwave-${CARCH}.install
+
+source=("${srcdir}/${basename}::svn://svn.code.sf.net/p/gtkwave/code/"
+        "0001-yyleng-type-fix.patch")
+sha256sums=('SKIP'
+            'd9a6e03f632f8dbc7884bbad291c13daad2f800091af50884968c4a45c211bcb')
+
+pkgver() {
+  cd "${srcdir}/${basename}/gtkwave3-gtk3"
+  echo $(svn info | grep -o -P '(?<=Last Changed Rev: ).*')
+}
+
+build() {
+  cd "${srcdir}/${basename}"
+  svn patch ${srcdir}/0001-yyleng-type-fix.patch
+  cd "${srcdir}/${basename}/gtkwave3-gtk3"
+  ./autogen.sh
+  cd "${srcdir}"
+
+  mkdir -p "build-${MINGW_CHOST}"
+  cd "build-${MINGW_CHOST}"
+
+  ../${basename}/gtkwave3-gtk3/configure \
+    --enable-gtk3 \
+	--with-tcl=${MINGW_PREFIX}/lib/tclConfig.sh \
+	--with-tk=${MINGW_PREFIX}/lib/tkConfig.sh \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --build=${MINGW_CHOST} \
+    --prefix=${MINGW_PREFIX}
+  make
+}
+
+package() {
+  cd "build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}

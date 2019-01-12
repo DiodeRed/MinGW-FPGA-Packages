@@ -1,0 +1,13 @@
+Index: gtkwave3-gtk3/contrib/rtlbrowse/vlex.h
+===================================================================
+--- gtkwave3-gtk3/contrib/rtlbrowse/vlex.h	(revision 1503)
++++ gtkwave3-gtk3/contrib/rtlbrowse/vlex.h	(working copy)
+@@ -24,7 +24,7 @@
+ int yylex(void);
+ extern char *yytext;
+ 
+-typedef size_t gtkwave_yy_size_t;
++typedef int gtkwave_yy_size_t;
+ extern gtkwave_yy_size_t yyleng;
+ 
+ const char *is_builtin_define (register const char *str, register unsigned int len);

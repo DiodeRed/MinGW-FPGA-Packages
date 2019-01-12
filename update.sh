@@ -23,3 +23,5 @@ updatePkg verilator
 updatePkg python3-bitarray
 updatePkg python3-pyvcd
 updatePkg nmigen
+
+updatePkg gtkwave
