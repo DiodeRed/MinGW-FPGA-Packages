@@ -5,7 +5,7 @@ _realname=${basename}-git
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 _ver_base=0.0
-pkgver=0.0.1819.c1d15c7
+pkgver=0.0.2210.bc6b47e
 pkgrel=1
 pkgdesc="nextpnr portable FPGA place and route tool"
 arch=('any')
@@ -13,7 +13,8 @@ url="https://github.com/YosysHQ/nextpnr"
 license=('ISC')
 provides=("${MINGW_PACKAGE_PREFIX}-nextpnr-ice40")
 conflicts=("${MINGW_PACKAGE_PREFIX}-nextpnr-ice40")
-depends=("${MINGW_PACKAGE_PREFIX}-python3"
+depends=("${MINGW_PACKAGE_PREFIX}-eigen3"
+         "${MINGW_PACKAGE_PREFIX}-python3"
          "${MINGW_PACKAGE_PREFIX}-gcc-libs"
 		 "${MINGW_PACKAGE_PREFIX}-icestorm"
 		 "${MINGW_PACKAGE_PREFIX}-qt5")

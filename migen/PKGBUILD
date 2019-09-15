@@ -4,8 +4,8 @@ basename=migen
 _realname=${basename}-git
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-_ver_base=0.0
-pkgver=0.0.1886.9da60e3
+_ver_base=0.9.1
+pkgver=0.9.1.1941.f4fcd10
 pkgrel=1
 pkgdesc="A Python toolbox for building complex digital hardware"
 arch=('any')
@@ -32,5 +32,5 @@ package() {
   cd "${srcdir}/${basename}"
   rm -rf ${pkgdir}${MINGW_PREFIX}
   MSYS2_ARG_CONV_EXCL="--prefix=;--install-scripts=;--install-platlib=" \
-  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1 --skip-build
+  ${MINGW_PREFIX}/bin/python3 setup.py install --prefix=${MINGW_PREFIX} --root="${pkgdir}" --optimize=1
 }

@@ -4,8 +4,8 @@ basename=iverilog
 _realname=${basename}-git
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-_ver_base=10.2
-pkgver=10.2.8371.7cd078e7
+_ver_base=10.3
+pkgver=10.3.8427.832adc5c
 pkgrel=1
 pkgdesc="Icarus Verilog"
 arch=('any')
@@ -25,10 +25,8 @@ makedepends=("git"
              "${MINGW_PACKAGE_PREFIX}-termcap"
              "${MINGW_PACKAGE_PREFIX}-gperf"
              )
-source=("$basename"::"git+https://github.com/steveicarus/$basename#branch=master"
-        '0001-vpi-modules-mingw-fix.patch')
-sha256sums=('SKIP'
-            '0663932243803f5832af57645536227fd1cc0a3b6f97bb7a6a578a0f617654ef')
+source=("$basename"::"git+https://github.com/steveicarus/$basename#branch=master")
+sha256sums=('SKIP')
 
 pkgver() {
   cd "${srcdir}/${basename}"
@@ -37,8 +35,6 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${basename}"
-  
-  git apply ${srcdir}/0001-vpi-modules-mingw-fix.patch
   
   sh autoconf.sh
   ./configure --prefix=${MINGW_PREFIX}

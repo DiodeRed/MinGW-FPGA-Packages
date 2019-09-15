@@ -4,8 +4,8 @@ basename=yosys
 _realname=${basename}-git
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-_ver_base=0.8
-pkgver=0.8.4299.2a2e0a47
+_ver_base=0.9
+pkgver=0.9.7062.4da6e19f
 pkgrel=1
 pkgdesc="Yosys Open SYnthesis Suite"
 arch=('any')
@@ -31,11 +31,9 @@ makedepends=("git"
              # "${MINGW_PACKAGE_PREFIX}-iverilog"
              )
 source=("$basename"::"git+https://github.com/YosysHQ/$basename#branch=master"
-        '0001-unit-test-mthreads.patch'
-        '0002-libyosys-dll-extension.patch')
+        '0001-unit-test-mthreads.patch')
 sha256sums=('SKIP'
-            '1248f07f6bdd9f14f191a5e7bdc1ed4cb7f7d65d0cffdaaf77816d4e2d74509b'
-            '27d64649701b82456b415f04ed9b48465f7bc78c340c0f7d7e09735556698312')
+            '1248f07f6bdd9f14f191a5e7bdc1ed4cb7f7d65d0cffdaaf77816d4e2d74509b')
 
 pkgver() {
   cd "${srcdir}/${basename}"
@@ -46,7 +44,6 @@ build() {
   cd "${srcdir}/${basename}"
   
   git apply ${srcdir}/0001-unit-test-mthreads.patch
-  git apply ${srcdir}/0002-libyosys-dll-extension.patch
   
   if [ "${MINGW_PACKAGE_PREFIX}" = "mingw-w64-x86_64" ]; then
     make -j1 config-msys2-64
